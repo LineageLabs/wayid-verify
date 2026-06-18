@@ -20,12 +20,16 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "bun test"
+    "test": "bun test",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "wayid",
@@ -35,8 +39,20 @@
     "gateway",
     "ai-agents"
   ],
-  "license": "UNLICENSED",
-  "private": true,
+  "license": "MIT",
+  "author": "Lineage Labs",
+  "homepage": "https://github.com/LineageLabs/wayid-verify#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LineageLabs/wayid-verify.git",
+    "directory": "js"
+  },
+  "bugs": {
+    "url": "https://github.com/LineageLabs/wayid-verify/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18"
   },

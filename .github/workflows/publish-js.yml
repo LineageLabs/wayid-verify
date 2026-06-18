@@ -1,0 +1,26 @@
+name: publish-js
+
+# Publishes @lineagelabs/wayid-verify to npm on a `js-v*` tag (e.g. js-v0.1.0).
+# Requires repo secret NPM_TOKEN (a publish-capable token for the lineagelabs npm org).
+on:
+  push:
+    tags:
+      - "js-v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install
+      # Build runs automatically via the package's prepublishOnly (tsc).
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

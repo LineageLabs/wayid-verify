@@ -9,9 +9,16 @@ in one call, with no user flow and without standing up its own crypto.
 This repo hosts the language packages:
 
 - **`js/`** — `@lineagelabs/wayid-verify` (TypeScript / NPM). Express + Cloudflare Worker adapters.
+  See [`js/README.md`](js/README.md).
 - **`python/`** — `wayid-verify` (PyPI). FastAPI / Starlette + Flask adapters.
+  See [`python/README.md`](python/README.md).
 
 The Nginx integration lives in its own repo: **`lineagelabs/wayid-nginx`**.
+
+```bash
+npm install @lineagelabs/wayid-verify     # Node / Bun / Cloudflare Workers
+pip install wayid-verify                  # Python 3.9+
+```
 
 ## How it works (v1 — passive)
 
@@ -34,3 +41,12 @@ outage or unknown DID never blocks traffic; the request is served and tagged `un
 
 Prototype for WayID issue [#373](https://github.com/LineageLabs/way-id/issues/373). The canonical
 wire contract lives in the way-id repo: `.specs/product-spec.md` §4.6 and `.specs/tech-spec.md` §5.5.
+
+## Releasing
+
+Both packages are publish-ready (tag-driven GitHub Actions) but not yet published — see
+[`PUBLISHING.md`](PUBLISHING.md) for the npm / PyPI setup and release steps.
+
+## License
+
+MIT © Lineage Labs — see [`LICENSE`](LICENSE).
