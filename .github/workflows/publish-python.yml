@@ -23,6 +23,12 @@ jobs:
       - run: python -m pip install --upgrade build
       - run: python -m build
         working-directory: python
+      - name: Verify the built wheel installs + imports (gate before publish)
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install --upgrade pip
+          /tmp/venv/bin/pip install python/dist/*.whl
+          /tmp/venv/bin/python -c "from wayid_verify import WayIDClient, verify_headers, Policy; print('ok: wheel verified before publish')"
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: python/dist

@@ -20,6 +20,38 @@ jobs:
       - run: bun run typecheck
       - run: bun test
 
+  # Verify the package installs the way a consumer gets it — not just that the
+  # source type-checks. Builds, packs the npm tarball (the registry-free install
+  # path), installs it in a clean project, and resolves every public export.
+  js-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build + pack
+        working-directory: js
+        run: |
+          npm install
+          npm run build
+          npm pack
+      - name: Install the tarball in a clean project and import it
+        run: |
+          tgz="$(ls "$GITHUB_WORKSPACE"/js/*.tgz)"
+          echo "installing $tgz"
+          mkdir -p /tmp/consumer && cd /tmp/consumer
+          npm init -y >/dev/null
+          npm install "$tgz"
+          node --input-type=module -e "
+            import { WayIDClient, decide } from '@lineagelabs/wayid-verify';
+            import { wayIdMiddleware } from '@lineagelabs/wayid-verify/express';
+            import { withWayId } from '@lineagelabs/wayid-verify/worker';
+            const ok = [WayIDClient, decide, wayIdMiddleware, withWayId].every(x => typeof x === 'function');
+            if (!ok) { console.error('export missing from tarball'); process.exit(1); }
+            console.log('ok: tarball install + all exports resolve');
+          "
+
   python:
     runs-on: ubuntu-latest
     defaults:
@@ -32,3 +64,25 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip pytest
       - run: python -m pytest
+
+  # Verify the package builds + installs as a real distribution (the same build
+  # the documented `pip install "git+...#subdirectory=python"` path uses) and
+  # imports from an installed location — pytest above only tests src/ in place.
+  python-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: pip install the package + import it from a venv
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install --upgrade pip
+          /tmp/venv/bin/pip install ./python
+          /tmp/venv/bin/python -c "
+          from wayid_verify import WayIDClient, verify_headers, Policy
+          from wayid_verify.asgi import WayIDMiddleware
+          from wayid_verify.flask_ext import wayid_before_request
+          print('ok: pip install + all imports resolve')
+          "

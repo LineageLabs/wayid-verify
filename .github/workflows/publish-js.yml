@@ -33,6 +33,19 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm pack # produces lineagelabs-wayid-verify-<version>.tgz in js/
+      - name: Verify the packed tarball installs + imports (gate before release/publish)
+        run: |
+          tgz="$(ls "$GITHUB_WORKSPACE"/js/*.tgz)"
+          mkdir -p /tmp/consumer && cd /tmp/consumer
+          npm init -y >/dev/null
+          npm install "$tgz"
+          node --input-type=module -e "
+            import { WayIDClient } from '@lineagelabs/wayid-verify';
+            import '@lineagelabs/wayid-verify/express';
+            import '@lineagelabs/wayid-verify/worker';
+            if (typeof WayIDClient !== 'function') { process.exit(1); }
+            console.log('ok: tarball verified before release/publish');
+          "
       - name: Attach tarball to the GitHub release
         uses: softprops/action-gh-release@v2
         with:
