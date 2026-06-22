@@ -10,6 +10,12 @@ me?"_ in one call — no user flow, no crypto to maintain.
 npm install @lineagelabs/wayid-verify
 ```
 
+Not on npm yet? Install the tarball attached to a GitHub release (no registry):
+
+```bash
+npm install https://github.com/LineageLabs/wayid-verify/releases/download/js-v0.1.0/lineagelabs-wayid-verify-0.1.0.tgz
+```
+
 Zero runtime dependencies. Works on Node 18+, Bun, and Cloudflare Workers.
 
 ## Quick start

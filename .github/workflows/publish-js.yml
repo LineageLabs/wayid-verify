@@ -1,11 +1,22 @@
 name: publish-js
 
-# Publishes @lineagelabs/wayid-verify to npm on a `js-v*` tag (e.g. js-v0.1.0).
-# Requires repo secret NPM_TOKEN (a publish-capable token for the lineagelabs npm org).
+# On a `js-v*` tag (e.g. js-v0.1.0) this:
+#   1. builds the package (tsc) and packs an `npm pack` tarball,
+#   2. attaches that tarball to the GitHub release for the tag — so the package
+#      is installable straight from GitHub with no registry:
+#        npm install https://github.com/LineageLabs/wayid-verify/releases/download/js-v0.1.0/lineagelabs-wayid-verify-0.1.0.tgz
+#   3. publishes to npm (requires repo secret NPM_TOKEN, a publish-capable token
+#      for the lineagelabs npm org).
+#
+# The release/tarball step runs before publish, so the no-registry install path
+# works even if the npm publish step is skipped or not yet configured.
 on:
   push:
     tags:
       - "js-v*"
+
+permissions:
+  contents: write # create the GitHub release + upload the tarball asset
 
 jobs:
   publish:
@@ -20,7 +31,12 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
       - run: npm install
-      # Build runs automatically via the package's prepublishOnly (tsc).
+      - run: npm run build
+      - run: npm pack # produces lineagelabs-wayid-verify-<version>.tgz in js/
+      - name: Attach tarball to the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: js/*.tgz
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

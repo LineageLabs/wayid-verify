@@ -50,3 +50,17 @@ Uses **Trusted Publishing (OIDC)** — no long-lived token. On <https://pypi.org
 
 The matching workflow builds and publishes. The `test.yml` workflow runs on every
 push/PR and gates correctness independently.
+
+### npm tarball (registry-free install)
+
+`publish-js.yml` also runs `npm pack` and attaches the resulting
+`lineagelabs-wayid-verify-<version>.tgz` to the GitHub release for the `js-v*` tag —
+**before** the npm publish step, so the tarball is available even if npm publishing is
+skipped or not yet configured. Consumers can then install with no registry:
+
+```bash
+npm install https://github.com/LineageLabs/wayid-verify/releases/download/js-v0.1.0/lineagelabs-wayid-verify-0.1.0.tgz
+```
+
+(The Python package needs no equivalent — `pip install "git+…#subdirectory=python"`
+installs it straight from the repo.)

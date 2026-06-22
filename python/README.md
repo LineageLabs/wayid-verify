@@ -3,6 +3,12 @@
 Dependency-free WayID verification for Python gateways. The core uses the standard
 library; pass a custom `transport` to use `httpx`/`requests`.
 
+```bash
+pip install wayid-verify                                # once on PyPI
+# or straight from the repo, no registry needed:
+pip install "git+https://github.com/LineageLabs/wayid-verify.git#subdirectory=python"
+```
+
 ```python
 from wayid_verify import WayIDClient, verify_headers, Policy
 

@@ -20,6 +20,31 @@ npm install @lineagelabs/wayid-verify     # Node / Bun / Cloudflare Workers
 pip install wayid-verify                  # Python 3.9+
 ```
 
+### Install without a registry (straight from GitHub)
+
+The packages aren't on npm / PyPI yet — until they are, install them directly from this repo.
+
+**Python** installs from the repo subdirectory in one step (it's pure-stdlib, zero deps):
+
+```bash
+pip install "git+https://github.com/LineageLabs/wayid-verify.git#subdirectory=python"
+```
+
+**JavaScript** can't be `npm install`ed from a git subdirectory, so each tagged release
+attaches a packed tarball you can install from its URL (no registry, no clone):
+
+```bash
+npm install https://github.com/LineageLabs/wayid-verify/releases/download/js-v0.1.0/lineagelabs-wayid-verify-0.1.0.tgz
+```
+
+Or build it from a clone:
+
+```bash
+git clone https://github.com/LineageLabs/wayid-verify.git
+cd wayid-verify/js && npm install && npm run build
+npm install /abs/path/to/wayid-verify/js   # from your project
+```
+
 ## How it works (v1 — passive)
 
 An agent declares its identity with a request header:
